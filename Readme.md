@@ -20,4 +20,4 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-1init_写成windows服务但是没啥用
+2直接使用for循环阻塞
