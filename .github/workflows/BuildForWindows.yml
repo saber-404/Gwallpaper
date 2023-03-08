@@ -29,7 +29,9 @@ jobs:
 #       run: cd main
 
     - name: Build
-      run: go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main\main.go
+      run: |
+        cd main
+        go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
     
     - name: Create Release
       id: create_release
