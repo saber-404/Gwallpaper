@@ -20,7 +20,7 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-3使用systray库_实现重载和退出
+3添加一个自己更换的选项
 
 ### 引用
 "github.com/getlantern/systray"
