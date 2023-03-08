@@ -13,8 +13,8 @@ func main() {
 func onReady() {
 	//设置托盘图标和提示文本
 	systray.SetIcon(Gwallpaper.GetIcon("icon.ico"))
-	systray.SetTitle("GwallPaper")
-	systray.SetTooltip("GwallPaper")
+	systray.SetTitle(Gwallpaper.Title)
+	systray.SetTooltip(Gwallpaper.Title)
 	exitItem := systray.AddMenuItem("退出程序", "Exit app")
 	reloadItem := systray.AddMenuItem("重载配置", "Reload setting")
 	go func() {

@@ -24,6 +24,7 @@ var (
 )
 
 const (
+	Title               = "GwallPaper"
 	MB_OK               = 0x00000000
 	MB_OKCANCEL         = 0x00000001
 	MB_ABORTRETRYIGNORE = 0x00000002
@@ -96,16 +97,15 @@ func GetIcon(path string) (iconbytes []byte) {
 
 // ShowMessage 显示对话框
 func ShowMessage(err error, flags uintptr) {
-	//var user32dll uintptr = user32.Handle()
-	var getActiveWindowFunc uintptr = getActiveWindow.Addr()
+	var getActiveWindowFunc = getActiveWindow.Addr()
 	var hwnd uintptr
 	ret, _, _ := syscall.SyscallN(getActiveWindowFunc, 0, 0, 0, 0)
 	if ret != 0 {
 		hwnd = ret
 	}
 
-	var caption string = "Gwallpaper"
-	var message string = err.Error()
+	var caption = Title
+	var message = err.Error()
 
 	messageptr, err := syscall.UTF16PtrFromString(message)
 	if err != nil {
@@ -133,10 +133,6 @@ func InitSetting() {
 		ShowMessage(errors.New("json文件解析失败"), MB_OK)
 		return
 	}
-
-	//fmt.Printf("RetryTimes %d\n", C.RetryTimes)
-	//fmt.Printf("FolderPath %s\n", C.FolderPath)
-	//fmt.Printf("SleepTime %d\n", C.SleepTime)
 }
 
 // SetWallpaper 壁纸设置函数
