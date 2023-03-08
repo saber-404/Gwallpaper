@@ -20,4 +20,7 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-2直接使用for循环阻塞
+3使用systray库_实现重载和退出
+
+### 引用
+"github.com/getlantern/systray"
