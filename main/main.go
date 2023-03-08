@@ -17,6 +17,7 @@ func onReady() {
 	systray.SetTooltip(Gwallpaper.Title)
 	exitItem := systray.AddMenuItem("退出程序", "Exit app")
 	reloadItem := systray.AddMenuItem("重载配置", "Reload setting")
+	changeItem := systray.AddMenuItem("换一张", "Choose other")
 	go func() {
 		for {
 			select {
@@ -28,6 +29,8 @@ func onReady() {
 				Gwallpaper.C.ChangeWallPaper()
 			case <-reloadItem.ClickedCh:
 				Gwallpaper.InitSetting()
+			case <-changeItem.ClickedCh:
+				Gwallpaper.C.ChangeWallPaper()
 			}
 		}
 	}()
