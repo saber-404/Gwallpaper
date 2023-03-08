@@ -29,6 +29,10 @@ func TestShowMessage(t *testing.T) {
 	Gwallpaper.ShowMessage(err_test, Gwallpaper.MB_OK)
 }
 
+func TestEditConfig(t *testing.T) {
+	Gwallpaper.EditConfig()
+}
+
 //func TestSetLockWallpaper(t *testing.T) {
 //	err := Gwallpaper.SetLockWallpaper("D:\\datacenter\\壁纸\\ForWallPaper\\4Browser\\105956477_p0.png")
 //	if err != nil {

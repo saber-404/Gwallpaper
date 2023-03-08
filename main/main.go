@@ -16,6 +16,7 @@ func onReady() {
 	systray.SetTitle(Gwallpaper.Title)
 	systray.SetTooltip(Gwallpaper.Title)
 	reloadItem := systray.AddMenuItem("重载配置", "Reload setting")
+	editItem := systray.AddMenuItem("编辑配置", "Edit Config File")
 	changeItem := systray.AddMenuItem("换一张", "Choose other")
 	LockItem := systray.AddMenuItemCheckbox("改变锁屏", "test1", Gwallpaper.C.ChangLockWallPaper)
 	systray.AddSeparator()
@@ -48,6 +49,8 @@ func onReady() {
 						return
 					}
 				}
+			case <-editItem.ClickedCh:
+				Gwallpaper.EditConfig()
 			}
 		}
 	}()
