@@ -1,16 +1,18 @@
 ### 说明
-这是一个win10定时随机更换壁纸程序，配置文件是同目录下的setting.json文件
+这是一个win10定时随机更换壁纸程序，配置文件是同目录下的setting.json文件，图标默认是同目录下的icon.ico文件
 
 ```
 {
   "RetryTimes": 10, 
   "FolderPath": "D:\\壁纸\\",
   "SleepTime": 900
+  "ChangLockWallPaper": false
 }
 
 RetryTimes 是重试时间
 FolderPath 指定壁纸文件夹 路径中最后一定要是"\\" 或"/"
 SleepTime  是更换间隔,单位是秒
+ChangLockWallPaper 是否更改锁屏 布尔值
 ```
 
 ### 编译选项
@@ -20,7 +22,18 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-3添加一个自己更换的选项
+4添加更改锁屏壁纸功能_需要管理员权限运行
+
+通过向注册表中添加 `[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP]`项
+并设置字符串值 `LockScreenImagePath` 为 图片绝对地址 就可以更换锁屏壁纸了 删除字符串值 `LockScreenImagePath`就可以恢复
+但是此时锁屏壁纸就不能由用户更换了
+文档见 [https://learn.microsoft.com/en-us/windows/client-management/mdm/personalization-csp#desktopimagestatus]()
 
 ### 引用
 "github.com/getlantern/systray"
+
+"golang.org/x/sys/windows/registry"
+
+### 测试
+有的测试需要管理员权限
+`sudo go test -v -run UndoTestSetLockWallpaper .\Gwallpaper_test.go`

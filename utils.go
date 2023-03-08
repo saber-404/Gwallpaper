@@ -3,6 +3,7 @@ package Gwallpaper
 import (
 	"encoding/json"
 	"errors"
+	"golang.org/x/sys/windows/registry"
 	"io/fs"
 	"io/ioutil"
 	"math/rand"
@@ -24,19 +25,21 @@ var (
 )
 
 const (
-	Title               = "GwallPaper"
-	MB_OK               = 0x00000000
-	MB_OKCANCEL         = 0x00000001
-	MB_ABORTRETRYIGNORE = 0x00000002
-	MB_YESNOCANCEL      = 0x00000003
-	MB_YESNO            = 0x00000004
-	MB_RETRYCANCEL      = 0x00000005
+	Title                = "GwallPaper"
+	LockWallPaperRegPath = `SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP`
+	MB_OK                = 0x00000000
+	MB_OKCANCEL          = 0x00000001
+	MB_ABORTRETRYIGNORE  = 0x00000002
+	MB_YESNOCANCEL       = 0x00000003
+	MB_YESNO             = 0x00000004
+	MB_RETRYCANCEL       = 0x00000005
 )
 
 type Config struct {
-	RetryTimes int    `json:"RetryTimes"`
-	FolderPath string `json:"FolderPath"`
-	SleepTime  int64  `json:"SleepTime"`
+	RetryTimes         int    `json:"RetryTimes"`
+	FolderPath         string `json:"FolderPath"`
+	SleepTime          int64  `json:"SleepTime"`
+	ChangLockWallPaper bool   `json:"ChangLockWallPaper"`
 }
 
 func init() {
@@ -54,6 +57,13 @@ func (c *Config) ChangeWallPaper() {
 	if err != nil {
 		ShowMessage(err, MB_OK)
 		return
+	}
+	if c.ChangLockWallPaper {
+		err := setLockWallpaper(C.FolderPath + PicName)
+		if err != nil {
+			ShowMessage(err, MB_OK)
+			return
+		}
 	}
 }
 
@@ -135,7 +145,7 @@ func InitSetting() {
 	}
 }
 
-// SetWallpaper 壁纸设置函数
+// SetWallpaper 桌面壁纸设置函数
 func setWallpaper(filepath string) error {
 	// 将文件路径转换为指向宽字符的指针
 	filepathPtr, err := syscall.UTF16PtrFromString(filepath)
@@ -149,5 +159,37 @@ func setWallpaper(filepath string) error {
 		uintptr(unsafe.Pointer(filepathPtr)),
 		uintptr(2),
 	)
+	return nil
+}
+
+// 锁屏壁纸设置
+func setLockWallpaper(filepath string) error {
+	k, _, err := registry.CreateKey(registry.LOCAL_MACHINE, LockWallPaperRegPath, registry.ALL_ACCESS)
+	if err != nil {
+		return errors.New("请使用管理员权限运行")
+	}
+	defer k.Close()
+
+	// Set the value of LockScreenImagePath to the desired path
+	err = k.SetStringValue("LockScreenImagePath", filepath)
+	if err != nil {
+		return errors.New("请使用管理员权限运行")
+	}
+	return nil
+}
+
+// UndoSetLockWallpaper 撤销锁屏壁纸设置
+func UndoSetLockWallpaper() error {
+	k, err := registry.OpenKey(registry.LOCAL_MACHINE, LockWallPaperRegPath, registry.ALL_ACCESS)
+	if err != nil {
+		return errors.New("恢复锁屏失败,请使用管理员权限运行")
+	}
+	defer k.Close()
+
+	// Delete the value of LockScreenImagePath
+	err = k.DeleteValue("LockScreenImagePath")
+	if err != nil {
+		return errors.New("恢复锁屏失败,请使用管理员权限运行")
+	}
 	return nil
 }
