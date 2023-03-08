@@ -39,35 +39,21 @@ type Config struct {
 }
 
 func init() {
-	file, err := ioutil.ReadFile("setting.json")
-	if err != nil {
-		ShowMessage(errors.New("找不到setting.json"), MB_OK)
-		return
-	}
-	err = json.Unmarshal(file, &C)
-	if err != nil {
-		ShowMessage(errors.New("json文件解析失败"), MB_OK)
-		return
-	}
-	//fmt.Printf("RetryTimes %d\n", C.RetryTimes)
-	//fmt.Printf("FolderPath %s\n", C.FolderPath)
+	InitSetting()
 }
 
-// SetWallpaper 壁纸设置函数
-func SetWallpaper(filepath string) error {
-	// 将文件路径转换为指向宽字符的指针
-	filepathPtr, err := syscall.UTF16PtrFromString(filepath)
+// ChangeWallPaper 改变壁纸
+func (c *Config) ChangeWallPaper() {
+	PicName, err := C.GetPicName()
 	if err != nil {
-		return errors.New("文件路径转换为指向宽字符的指针失败")
+		ShowMessage(err, MB_OK)
+		return
 	}
-	// 调用 SystemParametersInfo 函数设置壁纸
-	_, _, err = systemParametersInfo.Call(
-		spiSetDeskWallpaper,
-		0,
-		uintptr(unsafe.Pointer(filepathPtr)),
-		uintptr(2),
-	)
-	return nil
+	err = setWallpaper(C.FolderPath + PicName)
+	if err != nil {
+		ShowMessage(err, MB_OK)
+		return
+	}
 }
 
 // GetPicName 获取图片名称
@@ -99,6 +85,15 @@ func isImage(file fs.DirEntry) bool {
 	return ext == ".jpg" || ext == ".jpeg" || ext == ".png"
 }
 
+// GetIcon icon转byte流
+func GetIcon(path string) (iconbytes []byte) {
+	iconbytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	return iconbytes
+}
+
 // ShowMessage 显示对话框
 func ShowMessage(err error, flags uintptr) {
 	//var user32dll uintptr = user32.Handle()
@@ -124,4 +119,39 @@ func ShowMessage(err error, flags uintptr) {
 		uintptr(unsafe.Pointer(messageptr)),
 		uintptr(unsafe.Pointer(captionptr)),
 		flags)
+}
+
+// InitSetting 加载配置
+func InitSetting() {
+	file, err := ioutil.ReadFile("setting.json")
+	if err != nil {
+		ShowMessage(errors.New("找不到setting.json"), MB_OK)
+		return
+	}
+	err = json.Unmarshal(file, &C)
+	if err != nil {
+		ShowMessage(errors.New("json文件解析失败"), MB_OK)
+		return
+	}
+
+	//fmt.Printf("RetryTimes %d\n", C.RetryTimes)
+	//fmt.Printf("FolderPath %s\n", C.FolderPath)
+	//fmt.Printf("SleepTime %d\n", C.SleepTime)
+}
+
+// SetWallpaper 壁纸设置函数
+func setWallpaper(filepath string) error {
+	// 将文件路径转换为指向宽字符的指针
+	filepathPtr, err := syscall.UTF16PtrFromString(filepath)
+	if err != nil {
+		return errors.New("文件路径转换为指向宽字符的指针失败")
+	}
+	// 调用 SystemParametersInfo 函数设置壁纸
+	_, _, err = systemParametersInfo.Call(
+		spiSetDeskWallpaper,
+		0,
+		uintptr(unsafe.Pointer(filepathPtr)),
+		uintptr(2),
+	)
+	return nil
 }
