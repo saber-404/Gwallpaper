@@ -25,11 +25,11 @@ jobs:
     - name: Install dependencies
       run: go get github.com/getlantern/systray
       
-    - name: Change dircetory to main
-      run: cd main
+#     - name: Change dircetory to main
+#       run: cd main
 
     - name: Build
-      run: go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
+      run: go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main\main.go
     
     - name: Create Release
       id: create_release
