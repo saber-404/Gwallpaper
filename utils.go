@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"syscall"
@@ -192,4 +193,9 @@ func UndoSetLockWallpaper() error {
 		return errors.New("恢复锁屏失败,请使用管理员权限运行")
 	}
 	return nil
+}
+
+func EditConfig() {
+	cmd := exec.Command("notepad", "./setting.json")
+	cmd.Run()
 }

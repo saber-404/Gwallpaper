@@ -22,17 +22,8 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-4添加更改锁屏壁纸功能_需要管理员权限运行
+5添加修改配置文件功能
 
-通过向注册表中添加 `[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP]`项
-
-并设置字符串值 `LockScreenImagePath` 为图片绝对地址，就可以更换锁屏壁纸了 
-
-但是此时锁屏壁纸就不能由用户更换了
-
-删除字符串值 `LockScreenImagePath`就可以恢复
-
-文档见 [https://learn.microsoft.com/en-us/windows/client-management/mdm/personalization-csp#desktopimagestatus]()
 
 ### 引用
 "github.com/getlantern/systray"
