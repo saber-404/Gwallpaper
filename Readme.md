@@ -3,13 +3,11 @@
 
 ```
 {
-  "RetryTimes": 10, 
   "FolderPath": "D:\\壁纸\\",
   "SleepTime": 900
   "ChangLockWallPaper": false
 }
 
-RetryTimes 是重试时间
 FolderPath 指定壁纸文件夹 路径中最后一定要是"\\" 或"/"
 SleepTime  是更换间隔,单位是秒
 ChangLockWallPaper 是否更改锁屏 布尔值
@@ -22,13 +20,15 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-5添加修改配置文件功能
+6图标资源嵌入_封装文件夹选择对话框以生成默认配置
 
 
 ### 引用
 "github.com/getlantern/systray"
 
 "golang.org/x/sys/windows/registry"
+
+"github.com/lxn/win"
 
 ### 测试
 有的测试需要管理员权限
