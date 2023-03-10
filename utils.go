@@ -10,6 +10,7 @@ import (
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
+	"io/fs"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -36,16 +37,6 @@ import (
 	return files[index].Name(), nil
 }*/
 
-// 判断是否是图片
-/*func isImage(file fs.DirEntry) bool {
-	if file.IsDir() {
-		return false
-	}
-	//file.Info()
-	ext := strings.ToLower(filepath.Ext(file.Name()))
-	return ext == ".jpg" || ext == ".jpeg" || ext == ".png"
-}*/
-
 // GetIcon icon转byte流
 /*func GetIcon(path string) (iconbytes []byte) {
 	iconbytes, err := ioutil.ReadFile(path)
@@ -56,37 +47,47 @@ import (
 }*/
 
 // GetPicPath 随机给出图片路径
-func (c *Config) GetPicPath() (PicPath string, err error) {
-	var picpaths []string
-	randompic := func(path string, info os.FileInfo, err error) error {
+func (c *Config) GetPicPath() string {
+	l := len(PicPath)
+	return Prefix + PicPath[RandIntn(l)]
+}
+
+// GetPicPathSlice 获取图片路径字符串切片
+func (c *Config) GetPicPathSlice() []string {
+	var PathSlice []string
+	err := filepath.Walk(C.FolderPath, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() {
-			file, err := os.Open(path)
-			if err != nil {
-				return err
-			}
-			defer file.Close()
-			_, _, err = image.DecodeConfig(file)
-			if err == nil {
-				picpaths = append(picpaths, path)
-			}
+		if IsImage(path) {
+			PathSlice = append(PathSlice, path)
 		}
 		return nil
-	}
-	err = filepath.Walk(C.FolderPath, randompic)
+	})
 	if err != nil {
-		return "", err
+		return nil
 	}
-	l := len(picpaths)
+	return PathSlice
+}
+
+// SetPrefixAndPicPath 设定Prefix和PicPath切片
+func (c *Config) SetPrefixAndPicPath() {
+	PathSlice := c.GetPicPathSlice()
+	l := len(PathSlice)
 	if l == 0 {
-		return "", errors.New("此文件夹下没有图片")
-	} else {
-		rand.Seed(time.Now().UnixNano())
-		index := rand.Intn(l)
-		return picpaths[index], nil
+		ShowMessage(errors.New("路径下没有图片"), MB_OK)
+		return
 	}
+	prefix := PathSlice[0]
+	s1 := make([]string, l)
+	for _, str := range PathSlice {
+		prefix = commonPrefix(prefix, str)
+	}
+	for i, str := range PathSlice {
+		s1[i] = str[len(prefix):]
+	}
+	Prefix = prefix
+	PicPath = s1
 }
 
 func BoolToBOOL(value bool) BOOL {
@@ -103,23 +104,54 @@ func CheckFolderHasImage(folderpath string) bool {
 		if err != nil {
 			return err
 		}
-		if !info.IsDir() { // 如果不是目录
-			file, err := os.Open(path) // 打开文件
-			if err != nil {
-				return err
-			}
-			defer file.Close()
-			_, _, err = image.DecodeConfig(file) // 尝试解码图片
-			if err == nil {                      // 如果没有错误
-				hasImage = true // 设置标记为真
-				//fmt.Println(path)       // 打印图片路径
-				return filepath.SkipDir // 跳过剩余的目录和文件
-			}
+		if IsImage(path) {
+			hasImage = true
+			return filepath.SkipDir
 		}
+		//if !info.IsDir() { // 如果不是目录
+		//	file, err := os.Open(path) // 打开文件
+		//	if err != nil {
+		//		return err
+		//	}
+		//	defer file.Close()
+		//	_, _, err = image.DecodeConfig(file) // 尝试解码图片
+		//	if err == nil {                      // 如果没有错误
+		//		hasImage = true // 设置标记为真
+		//		return filepath.SkipDir // 跳过剩余的目录和文件
+		//	}
+		//}
 		return nil
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 	return hasImage
+}
+
+// IsImage 判断是否是图片
+func IsImage(path string) bool {
+	file, err := os.Open(path)
+	defer file.Close()
+	if err != nil {
+		return false
+	}
+	_, _, err = image.DecodeConfig(file)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func RandIntn(length int) int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(length)
+}
+
+// commonPrefix returns the longest common prefix of two strings
+func commonPrefix(a, b string) string {
+	i := 0
+	for i < len(a) && i < len(b) && a[i] == b[i] {
+		i++
+	}
+	return a[:i]
 }
