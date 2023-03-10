@@ -11,7 +11,9 @@ import (
 )
 
 var (
-	C Config
+	C       Config
+	Prefix  string
+	PicPath []string
 	//go:embed asset/icon.ico
 	Icon []byte
 )
@@ -33,23 +35,26 @@ func init() {
 
 // ChangeWallPaper 改变壁纸
 func (c *Config) ChangeWallPaper() {
-	PicPath, err := C.GetPicPath()
-	if err != nil {
-		ShowMessage(err, MB_OK)
-		return
+	path := C.GetPicPath()
+	if !IsImage(path) {
+		//	更新缓存
+		c.SetPrefixAndPicPath()
 	}
-	err = SetWallpaper(PicPath)
+	err := SetWallpaper(path)
 	if err != nil {
 		ShowMessage(err, MB_OK)
 		return
 	}
 	if c.ChangLockWallPaper {
-		err := setLockWallpaper(PicPath)
+		err := setLockWallpaper(path)
 		if err != nil {
 			ShowMessage(err, MB_OK)
 			return
 		}
 	}
+	//	测试
+	//logt := fmt.Sprintf("Prefix:%s Pics:%v", Prefix, PicPath)
+	//ShowMessage(errors.New(logt), MB_OK)
 }
 
 // InitSetting 加载配置
@@ -70,6 +75,8 @@ func InitSetting() {
 		os.Exit(1)
 		return
 	}
+	//扫描一次图片,并缓存到变量
+	C.SetPrefixAndPicPath()
 }
 
 // 锁屏壁纸设置
