@@ -20,7 +20,7 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-6图标资源嵌入_封装文件夹选择对话框以生成默认配置
+7添加恢复默认配置选项
 
 
 ### 引用
