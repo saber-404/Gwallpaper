@@ -37,6 +37,7 @@ func onReady() {
 			//	应用配置文件
 			case <-reloadItem.ClickedCh:
 				Gwallpaper.InitSetting()
+				Gwallpaper.C.ChangeWallPaper()
 			//	换一张壁纸
 			case <-changeItem.ClickedCh:
 				Gwallpaper.C.ChangeWallPaper()
@@ -52,13 +53,13 @@ func onReady() {
 				if Gwallpaper.C.ChangLockWallPaper {
 					LockItem.Check()
 					//fmt.Println("执行改变锁屏")
+					Gwallpaper.C.ChangeWallPaper()
 				} else {
 					LockItem.Uncheck()
 					//fmt.Println("执行恢复锁屏")
 					err := Gwallpaper.UndoSetLockWallpaper()
 					if err != nil {
 						Gwallpaper.ShowMessage(err, Gwallpaper.MB_OK)
-						return
 					}
 				}
 			//	编辑配置
@@ -69,5 +70,5 @@ func onReady() {
 	}()
 }
 func onExit() {
-
+	//	systray.Quit()执行后执行
 }
