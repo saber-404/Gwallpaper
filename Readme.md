@@ -20,7 +20,7 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-7添加恢复默认配置选项
+8优化内存_加入缓存
 
 
 ### 引用
