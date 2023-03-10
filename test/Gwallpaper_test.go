@@ -2,31 +2,20 @@ package test
 
 import (
 	"Gwallpaper"
-	"errors"
 	"testing"
 )
 
-//func TestSetWallpaper(t *testing.T) {
-//	newWallpaperPath := "D:\\test.png"
-//	err := Gwallpaper.SetWallpaper(newWallpaperPath)
+//func TestGetPicName(t *testing.T) {
+//	name, err := Gwallpaper.C.GetPicName()
 //	if err != nil {
 //		t.Log(err)
 //		return
 //	}
+//	t.Fatal(name)
 //}
 
-func TestGetPicName(t *testing.T) {
-	name, err := Gwallpaper.C.GetPicName()
-	if err != nil {
-		t.Log(err)
-		return
-	}
-	t.Fatal(name)
-}
-
-func TestShowMessage(t *testing.T) {
-	err_test := errors.New("test error")
-	Gwallpaper.ShowMessage(err_test, Gwallpaper.MB_OK)
+func TestInitSettings(t *testing.T) {
+	Gwallpaper.InitSetting()
 }
 
 func TestEditConfig(t *testing.T) {
@@ -41,10 +30,18 @@ func TestEditConfig(t *testing.T) {
 //	}
 //}
 
-//func TestUndoSetLockWallpaper(t *testing.T) {
-//	err := Gwallpaper.UndoSetLockWallpaper()
-//	if err != nil {
-//		Gwallpaper.ShowMessage(err, Gwallpaper.MB_OK)
-//		return
-//	}
-//}
+func TestUndoSetLockWallpaper(t *testing.T) {
+	err := Gwallpaper.UndoSetLockWallpaper()
+	if err != nil {
+		Gwallpaper.ShowMessage(err, Gwallpaper.MB_OK)
+		return
+	}
+}
+
+func TestConfig2Json(t *testing.T) {
+	Gwallpaper.Config2Json()
+}
+
+func TestChangeWallPaper(t *testing.T) {
+	Gwallpaper.C.ChangeWallPaper()
+}

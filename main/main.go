@@ -12,7 +12,8 @@ func main() {
 
 func onReady() {
 	//设置托盘图标和提示文本
-	systray.SetIcon(Gwallpaper.GetIcon("icon.ico"))
+	//systray.SetIcon(Gwallpaper.GetIcon("icon.ico"))
+	systray.SetIcon(Gwallpaper.Icon)
 	systray.SetTitle(Gwallpaper.Title)
 	systray.SetTooltip(Gwallpaper.Title)
 	reloadItem := systray.AddMenuItem("重载配置", "Reload setting")
