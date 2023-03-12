@@ -8,7 +8,7 @@
   "ChangLockWallPaper": false
 }
 
-FolderPath 指定壁纸文件夹 路径中最后一定要是"\\" 或"/"
+FolderPath 指定壁纸文件夹
 SleepTime  是更换间隔,单位是秒
 ChangLockWallPaper 是否更改锁屏 布尔值
 ```
@@ -20,7 +20,7 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-8优化内存_加入缓存
+9构建图片树
 
 
 ### 引用
