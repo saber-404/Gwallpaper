@@ -11,9 +11,10 @@ import (
 )
 
 var (
-	C       Config
-	Prefix  string
-	PicPath []string
+	C        Config
+	Prefix   string
+	TreeNode PicNode
+
 	//go:embed asset/icon.ico
 	Icon []byte
 )
@@ -35,10 +36,12 @@ func init() {
 
 // ChangeWallPaper 改变壁纸
 func (c *Config) ChangeWallPaper() {
-	path := C.GetPicPath()
+	//path := C.GetPicPath()
+	path := C.GetPicPathByTree()
 	if !IsImage(path) {
 		//	更新缓存
-		c.SetPrefixAndPicPath()
+		//c.SetPrefixAndPicPath()
+		SetTreeNode()
 	}
 	err := SetWallpaper(path)
 	if err != nil {
@@ -55,6 +58,9 @@ func (c *Config) ChangeWallPaper() {
 	//	测试
 	//logt := fmt.Sprintf("Prefix:%s Pics:%v", Prefix, PicPath)
 	//ShowMessage(errors.New(logt), MB_OK)
+
+	//	测试
+	//PrintTree(&TreeNode, 0)
 }
 
 // InitSetting 加载配置
@@ -76,7 +82,8 @@ func InitSetting() {
 		return
 	}
 	//扫描一次图片,并缓存到变量
-	C.SetPrefixAndPicPath()
+	//C.SetPrefixAndPicPath()
+	SetTreeNode()
 }
 
 // 锁屏壁纸设置
