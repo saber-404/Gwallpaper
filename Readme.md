@@ -3,14 +3,21 @@
 
 ```
 {
-  "FolderPath": "D:\\壁纸\\",
   "SleepTime": 900
-  "ChangLockWallPaper": false
+  "ChangLockWallPaper": false,
+      "Cache": {
+        "Name": "D:\\datacenter\\壁纸",
+        "Children": [
+            {
+                "Name": "test.png",
+                "Children": null
+            },
+        ]
+    }
 }
-
-FolderPath 指定壁纸文件夹
 SleepTime  是更换间隔,单位是秒
 ChangLockWallPaper 是否更改锁屏 布尔值
+Cache 缓存的文件树
 ```
 
 ### 编译选项
@@ -20,7 +27,7 @@ go build -o changewallpaper.exe -ldflags="-s -w -H windowsgui" .\main.go
 ```
 
 ### 版本与gitTag
-9构建图片树
+10加入缓存机制_将图片树缓存到文件
 
 
 ### 引用

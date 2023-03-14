@@ -29,30 +29,7 @@ func (p *PicNode) Insert(path string) {
 		p.Children = append(p.Children, node)
 		node.Insert(filepath.Join(path, node.Name))
 	}
-
 }
-
-/*func (p *PicNode) SaveData2File(filePath string) {
-	//	将p中的数据序列化到文件filePath
-	data, err := json.MarshalIndent(p, "", "    ")
-	if err != nil {
-		fmt.Println(err)
-	}
-	ioutil.WriteFile(filePath, data, 0644)
-}*/
-
-/*func (p *PicNode) LoadDataFromFile(filePath string) error {
-	//	从filePath中反序列化数据，重建树
-	data, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(data, p)
-	if err != nil {
-		return err
-	}
-	return nil
-}*/
 
 // Filter 去掉dirs中的空文件夹
 func Filter(path string, dirs []os.DirEntry) []os.DirEntry {

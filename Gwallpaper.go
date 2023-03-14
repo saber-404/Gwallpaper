@@ -18,10 +18,10 @@ var (
 )
 
 const (
-	Title                = "GwallPaper"
-	LockWallPaperRegPath = `SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP`
-	SleepTime            = 900
-	ChangeLockWallPaper  = false
+	Title                      = "GwallPaper"
+	LockWallPaperRegPath       = `SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP`
+	SleepTime            int64 = 900
+	ChangeLockWallPaper        = false
 )
 
 type Config struct {
@@ -36,11 +36,8 @@ func init() {
 
 // ChangeWallPaper 改变壁纸
 func (c *Config) ChangeWallPaper() {
-	//path := C.GetPicPath()
 	path := C.GetPicPathByTree()
 	if !IsImage(path) {
-		//	更新缓存
-		//c.SetPrefixAndPicPath()
 		SetTreeNode()
 	}
 	err := SetWallpaper(path)
@@ -58,10 +55,6 @@ func (c *Config) ChangeWallPaper() {
 	//	测试
 	//logt := fmt.Sprintf("Prefix:%s Pics:%v", Prefix, PicPath)
 	//ShowMessage(errors.New(logt), MB_OK)
-
-	//	测试
-	//fmt.Println("执行了")
-	//PrintTree(TreeNode, 0)
 }
 
 // InitSetting 加载配置
@@ -72,26 +65,11 @@ func InitSetting() {
 		return
 	}
 	LoadData()
-	//file, err := ioutil.ReadFile("setting.json")
-	//if err != nil {
-	//	ShowMessage(errors.New("创建默认setting.json失败"), MB_OK)
-	//	os.Exit(0)
-	//	return
-	//}
-	//err = json.Unmarshal(file, &C)
-	//if err != nil {
-	//	ShowMessage(errors.New("json文件解析失败"), MB_OK)
-	//	os.Exit(1)
-	//	return
-	//}
-	//_, err = os.Stat("cache")
-	//if err != nil {
-	//	SetTreeNode(1)
-	//	return
-	//}
-	//扫描一次图片,并缓存到变量
-	//C.SetPrefixAndPicPath()
-	//SetTreeNode(0)
+	//	校验配置
+	if !CheckFolderHasImage(C.Cache.Name) {
+		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
+		Config2Json(C.SleepTime, C.ChangLockWallPaper)
+	}
 }
 
 // 锁屏壁纸设置
@@ -156,14 +134,6 @@ func Config2Json(SleepTime int64, ChangeLockWallPaper bool) {
 	if err != nil {
 		return
 	}
-	//bytes, err := json.MarshalIndent(DefaultConfig,"", "    ")
-	//if err != nil {
-	//	return
-	//}
-	//err = ioutil.WriteFile("./setting.json", bytes, 0644)
-	//if err != nil {
-	//	return
-	//}
 }
 
 func SaveData(DefaultConfig Config) error {
@@ -177,6 +147,7 @@ func SaveData(DefaultConfig Config) error {
 	}
 	return err
 }
+
 func LoadData() {
 	file, err := ioutil.ReadFile("setting.json")
 	if err != nil {
@@ -190,6 +161,4 @@ func LoadData() {
 		os.Exit(1)
 		return
 	}
-	//
-	//fmt.Println(C.Cache.Name)
 }

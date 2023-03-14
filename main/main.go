@@ -38,7 +38,7 @@ func onReady() {
 				Gwallpaper.LoadData()
 				Gwallpaper.SetTreeNode()
 				Gwallpaper.C.ChangeWallPaper()
-				//Gwallpaper.SaveData(Gwallpaper.C)
+				Gwallpaper.SaveData(Gwallpaper.C)
 			//	换一张壁纸
 			case <-changeItem.ClickedCh:
 				Gwallpaper.C.ChangeWallPaper()
