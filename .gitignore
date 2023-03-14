@@ -2,3 +2,4 @@
 .idea/*
 *.json
 test/icon.ico
+Csrc/*

@@ -146,8 +146,8 @@ func commonPrefix(a, b string) string {
 }*/
 
 // IsDirEmpty 判断文件夹是否为空
-/*func IsDirEmpty(name string) (bool, error) {
-	f, err := os.Open(name)
+/*func IsDirEmpty(Name string) (bool, error) {
+	f, err := os.Open(Name)
 	if err != nil {
 		return false, err
 	}

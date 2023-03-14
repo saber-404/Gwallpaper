@@ -11,23 +11,23 @@ import (
 )
 
 var (
-	C        Config
-	Prefix   string
-	TreeNode PicNode
+	C Config
 
 	//go:embed asset/icon.ico
 	Icon []byte
 )
 
 const (
-	Title                = "GwallPaper"
-	LockWallPaperRegPath = `SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP`
+	Title                      = "GwallPaper"
+	LockWallPaperRegPath       = `SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP`
+	SleepTime            int64 = 900
+	ChangeLockWallPaper        = false
 )
 
 type Config struct {
-	FolderPath         string `json:"FolderPath"`
-	SleepTime          int64  `json:"SleepTime"`
-	ChangLockWallPaper bool   `json:"ChangLockWallPaper"`
+	SleepTime          int64
+	ChangLockWallPaper bool
+	Cache              PicNode
 }
 
 func init() {
@@ -36,11 +36,8 @@ func init() {
 
 // ChangeWallPaper 改变壁纸
 func (c *Config) ChangeWallPaper() {
-	//path := C.GetPicPath()
 	path := C.GetPicPathByTree()
 	if !IsImage(path) {
-		//	更新缓存
-		//c.SetPrefixAndPicPath()
 		SetTreeNode()
 	}
 	err := SetWallpaper(path)
@@ -58,32 +55,21 @@ func (c *Config) ChangeWallPaper() {
 	//	测试
 	//logt := fmt.Sprintf("Prefix:%s Pics:%v", Prefix, PicPath)
 	//ShowMessage(errors.New(logt), MB_OK)
-
-	//	测试
-	//PrintTree(&TreeNode, 0)
 }
 
 // InitSetting 加载配置
 func InitSetting() {
 	_, err := os.Stat("setting.json")
 	if err != nil {
-		Config2Json()
-	}
-	file, err := ioutil.ReadFile("setting.json")
-	if err != nil {
-		ShowMessage(errors.New("创建默认setting.json失败"), MB_OK)
-		os.Exit(0)
+		Config2Json(SleepTime, ChangeLockWallPaper)
 		return
 	}
-	err = json.Unmarshal(file, &C)
-	if err != nil {
-		ShowMessage(errors.New("json文件解析失败"), MB_OK)
-		os.Exit(1)
-		return
+	LoadData()
+	//	校验配置
+	if !CheckFolderHasImage(C.Cache.Name) {
+		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
+		Config2Json(C.SleepTime, C.ChangLockWallPaper)
 	}
-	//扫描一次图片,并缓存到变量
-	//C.SetPrefixAndPicPath()
-	SetTreeNode()
 }
 
 // 锁屏壁纸设置
@@ -125,7 +111,7 @@ func EditConfig() {
 }
 
 // Config2Json 生成配置 也可用于还原原本配置
-func Config2Json() {
+func Config2Json(SleepTime int64, ChangeLockWallPaper bool) {
 	IsChoice, PicFolderPath := ShowFolderDialogForGetFolderPath("选择壁纸文件夹")
 	if !IsChoice {
 		os.Exit(0)
@@ -137,17 +123,42 @@ func Config2Json() {
 	if !IsChoice {
 		os.Exit(0)
 	}
+	C.Cache.Name = PicFolderPath
+	SetTreeNode()
 	DefaultConfig := Config{
-		FolderPath:         PicFolderPath + `\`,
-		SleepTime:          900,
-		ChangLockWallPaper: false,
+		SleepTime:          SleepTime,
+		ChangLockWallPaper: ChangeLockWallPaper,
+		Cache:              C.Cache,
 	}
-	bytes, err := json.Marshal(DefaultConfig)
+	err := SaveData(DefaultConfig)
 	if err != nil {
 		return
 	}
+}
+
+func SaveData(DefaultConfig Config) error {
+	bytes, err := json.MarshalIndent(DefaultConfig, "", "    ")
+	if err != nil {
+		return err
+	}
 	err = ioutil.WriteFile("./setting.json", bytes, 0644)
 	if err != nil {
+		return err
+	}
+	return err
+}
+
+func LoadData() {
+	file, err := ioutil.ReadFile("setting.json")
+	if err != nil {
+		ShowMessage(errors.New("创建默认setting.json失败"), MB_OK)
+		os.Exit(0)
+		return
+	}
+	err = json.Unmarshal(file, &C)
+	if err != nil {
+		ShowMessage(errors.New("json文件解析失败"), MB_OK)
+		os.Exit(1)
 		return
 	}
 }
