@@ -26,7 +26,6 @@ func onReady() {
 	go func() {
 		for {
 			select {
-
 			//退出
 			case <-exitItem.ClickedCh:
 				systray.Quit()
@@ -36,14 +35,16 @@ func onReady() {
 				Gwallpaper.C.ChangeWallPaper()
 			//	应用配置文件
 			case <-reloadItem.ClickedCh:
-				Gwallpaper.InitSetting()
+				Gwallpaper.LoadData()
+				Gwallpaper.SetTreeNode()
 				Gwallpaper.C.ChangeWallPaper()
+				//Gwallpaper.SaveData(Gwallpaper.C)
 			//	换一张壁纸
 			case <-changeItem.ClickedCh:
 				Gwallpaper.C.ChangeWallPaper()
 			//	恢复默认配置并立即应用
 			case <-defaultItem.ClickedCh:
-				Gwallpaper.Config2Json()
+				Gwallpaper.Config2Json(Gwallpaper.SleepTime, Gwallpaper.ChangeLockWallPaper)
 				Gwallpaper.InitSetting()
 				Gwallpaper.C.ChangeWallPaper()
 			//	改变锁屏
@@ -71,4 +72,6 @@ func onReady() {
 }
 func onExit() {
 	//	systray.Quit()执行后执行
+	//Gwallpaper.TreeNode.SaveData2File("./cache")
+	Gwallpaper.SaveData(Gwallpaper.C)
 }
