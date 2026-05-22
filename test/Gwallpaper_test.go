@@ -2,17 +2,17 @@ package test
 
 import (
 	"Gwallpaper"
+	"fmt"
+	"strings"
 	"testing"
 )
 
-//func TestGetPicName(t *testing.T) {
-//	name, err := Gwallpaper.C.GetPicName()
-//	if err != nil {
-//		t.Log(err)
-//		return
-//	}
-//	t.Fatal(name)
-//}
+func PrintTree(node *Gwallpaper.PicNode, depth int) {
+	fmt.Printf("%s%s\n", strings.Repeat(" ", depth*4), node.Name)
+	for _, child := range node.Children {
+		PrintTree(child, depth+1)
+	}
+}
 
 func TestInitSettings(t *testing.T) {
 	Gwallpaper.InitSetting()
@@ -21,14 +21,6 @@ func TestInitSettings(t *testing.T) {
 func TestEditConfig(t *testing.T) {
 	Gwallpaper.EditConfig()
 }
-
-//func TestSetLockWallpaper(t *testing.T) {
-//	err := Gwallpaper.SetLockWallpaper("D:\\datacenter\\壁纸\\ForWallPaper\\4Browser\\105956477_p0.png")
-//	if err != nil {
-//		Gwallpaper.ShowMessage(err, Gwallpaper.MB_OK)
-//		return
-//	}
-//}
 
 func TestUndoSetLockWallpaper(t *testing.T) {
 	err := Gwallpaper.UndoSetLockWallpaper()
@@ -47,8 +39,8 @@ func TestChangeWallPaper(t *testing.T) {
 }
 
 func TestLoadData(t *testing.T) {
-	Gwallpaper.PrintTree(&Gwallpaper.C.Cache, 0)
+	PrintTree(&Gwallpaper.C.Cache, 0)
 	Gwallpaper.C.Cache = Gwallpaper.PicNode{}
 	Gwallpaper.LoadData()
-	Gwallpaper.PrintTree(&Gwallpaper.C.Cache, 0)
+	PrintTree(&Gwallpaper.C.Cache, 0)
 }

@@ -3,3 +3,4 @@
 *.json
 test/icon.ico
 Csrc/*
+Makefile

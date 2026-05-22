@@ -11,8 +11,6 @@ func main() {
 }
 
 func onReady() {
-	//设置托盘图标和提示文本
-	//systray.SetIcon(Gwallpaper.GetIcon("icon.ico"))
 	systray.SetIcon(Gwallpaper.Icon)
 	systray.SetTitle(Gwallpaper.Title)
 	systray.SetTooltip(Gwallpaper.Title)
@@ -50,14 +48,11 @@ func onReady() {
 			//	改变锁屏
 			case <-LockItem.ClickedCh:
 				Gwallpaper.C.ChangLockWallPaper = !Gwallpaper.C.ChangLockWallPaper
-				//fmt.Println("点击动作")
 				if Gwallpaper.C.ChangLockWallPaper {
 					LockItem.Check()
-					//fmt.Println("执行改变锁屏")
 					Gwallpaper.C.ChangeWallPaper()
 				} else {
 					LockItem.Uncheck()
-					//fmt.Println("执行恢复锁屏")
 					err := Gwallpaper.UndoSetLockWallpaper()
 					if err != nil {
 						Gwallpaper.ShowMessage(err, Gwallpaper.MB_OK)
@@ -71,7 +66,5 @@ func onReady() {
 	}()
 }
 func onExit() {
-	//	systray.Quit()执行后执行
-	//Gwallpaper.TreeNode.SaveData2File("./cache")
 	Gwallpaper.SaveData(Gwallpaper.C)
 }

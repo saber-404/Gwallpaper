@@ -2,10 +2,8 @@ package Gwallpaper
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 type PicNode struct {
@@ -20,7 +18,7 @@ func (p *PicNode) Insert(path string) {
 	if err != nil {
 		return
 	}
-	dirs = Filter(path, dirs)
+	dirs = filterPicEntries(path, dirs)
 	if len(dirs) == 0 {
 		return
 	}
@@ -31,8 +29,8 @@ func (p *PicNode) Insert(path string) {
 	}
 }
 
-// Filter 去掉dirs中的空文件夹
-func Filter(path string, dirs []os.DirEntry) []os.DirEntry {
+// filterPicEntries 去掉dirs中的空文件夹
+func filterPicEntries(path string, dirs []os.DirEntry) []os.DirEntry {
 	var result []os.DirEntry
 	for _, dir := range dirs {
 		if dir.IsDir() {
@@ -51,7 +49,6 @@ func Filter(path string, dirs []os.DirEntry) []os.DirEntry {
 
 func SetTreeNode() {
 	C.Cache.Children = nil
-	//TreeNode.Children = nil
 	C.Cache.Insert(C.Cache.Name)
 }
 
@@ -73,13 +70,4 @@ func (c *Config) GetPicPathByTree() string {
 		node = *child
 	}
 	return filepath.Join(C.Cache.Name, path)
-}
-
-func PrintTree(node *PicNode, depth int) {
-	// 打印节点的名称和缩进
-	fmt.Printf("%s%s\n", strings.Repeat(" ", depth*4), node.Name)
-	// 递归打印子节点
-	for _, child := range node.Children {
-		PrintTree(child, depth+1)
-	}
 }

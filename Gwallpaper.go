@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"golang.org/x/sys/windows/registry"
-	"io/ioutil"
 	"os"
 	"os/exec"
 )
@@ -52,9 +51,6 @@ func (c *Config) ChangeWallPaper() {
 			return
 		}
 	}
-	//	测试
-	//logt := fmt.Sprintf("Prefix:%s Pics:%v", Prefix, PicPath)
-	//ShowMessage(errors.New(logt), MB_OK)
 }
 
 // InitSetting 加载配置
@@ -141,15 +137,15 @@ func SaveData(DefaultConfig Config) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile("./setting.json", bytes, 0644)
+	err = os.WriteFile("./setting.json", bytes, 0644)
 	if err != nil {
 		return err
 	}
-	return err
+	return nil
 }
 
 func LoadData() {
-	file, err := ioutil.ReadFile("setting.json")
+	file, err := os.ReadFile("setting.json")
 	if err != nil {
 		ShowMessage(errors.New("创建默认setting.json失败"), MB_OK)
 		os.Exit(0)
