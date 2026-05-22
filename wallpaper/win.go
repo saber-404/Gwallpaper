@@ -1,8 +1,4 @@
-/*
-与win10图形功能相关的函数放在这里
-*/
-
-package Gwallpaper
+package wallpaper
 
 import (
 	"errors"
@@ -14,9 +10,9 @@ const MB_OK = 0x00000000
 
 const (
 	BIF_RETURNONLYFSDIRS  = 0x00000001
-	BIF_DONTGOBELOWDOMAIN  = 0x00000002
-	BIF_NEWDIALOGSTYLE     = 0x00000040
-	BIF_NONEWFOLDERBUTTON  = 0x00000200
+	BIF_DONTGOBELOWDOMAIN = 0x00000002
+	BIF_NEWDIALOGSTYLE    = 0x00000040
+	BIF_NONEWFOLDERBUTTON = 0x00000200
 )
 
 const SPI_SETDESKWALLPAPER = 0x0014
@@ -58,17 +54,14 @@ var (
 	shParseDisplayName  = shell32.NewProc("SHParseDisplayName")
 )
 
-// GetActiveWindow 获得一个句柄
 func GetActiveWindow() HWND {
 	ret, _, _ := syscall.Syscall(getActiveWindow.Addr(), 0,
 		0,
 		0,
 		0)
-
 	return HWND(ret)
 }
 
-// MessageBox 弹出对话框
 func MessageBox(hWnd HWND, lpText, lpCaption *uint16, uType uint32) int32 {
 	ret, _, _ := syscall.Syscall6(messageBox.Addr(), 4,
 		uintptr(hWnd),
@@ -77,11 +70,9 @@ func MessageBox(hWnd HWND, lpText, lpCaption *uint16, uType uint32) int32 {
 		uintptr(uType),
 		0,
 		0)
-
 	return int32(ret)
 }
 
-// ShowMessage 显示对话框
 func ShowMessage(err error, flags uintptr) {
 	hwnd := GetActiveWindow()
 	var caption = Title
@@ -97,7 +88,6 @@ func ShowMessage(err error, flags uintptr) {
 	MessageBox(hwnd, messageptr, captionptr, uint32(flags))
 }
 
-// SHBrowseForFolder 返回文件夹选择器对象指针
 func SHBrowseForFolder(lpbi *BROWSEINFO) uintptr {
 	ret, _, _ := syscall.Syscall(shBrowseForFolder.Addr(), 1,
 		uintptr(unsafe.Pointer(lpbi)),
@@ -106,17 +96,14 @@ func SHBrowseForFolder(lpbi *BROWSEINFO) uintptr {
 	return ret
 }
 
-// SHGetPathFromIDList 返回文件夹路径
 func SHGetPathFromIDList(pidl uintptr, pszPath *uint16) bool {
 	ret, _, _ := syscall.Syscall(shGetPathFromIDList.Addr(), 2,
 		pidl,
 		uintptr(unsafe.Pointer(pszPath)),
 		0)
-
 	return ret != 0
 }
 
-// SHParseDisplayName 解析路径到结构体
 func SHParseDisplayName(pszName *uint16, pbc uintptr, ppidl *uintptr, sfgaoIn uint32, psfgaoOut *uint32) HRESULT {
 	ret, _, _ := syscall.Syscall6(shParseDisplayName.Addr(), 5,
 		uintptr(unsafe.Pointer(pszName)),
@@ -125,14 +112,11 @@ func SHParseDisplayName(pszName *uint16, pbc uintptr, ppidl *uintptr, sfgaoIn ui
 		0,
 		uintptr(unsafe.Pointer(psfgaoOut)),
 		0)
-
 	return HRESULT(ret)
 }
 
-// ShowFolderDialogForGetFolderPath 显示文件夹选择器并返回地址
 func ShowFolderDialogForGetFolderPath(message string) (IsChoice bool, PicFolderPath string) {
 	var path [256]uint16
-	//选择我的电脑为起始文件夹
 	pszName := syscall.StringToUTF16Ptr(`::{20D04FE0-3AEA-1069-A2D8-08002B30309D}`)
 	ppidl := uintptr(unsafe.Pointer(&ITEMIDLIST{}))
 	SHParseDisplayName(pszName, 0, &ppidl, 0, nil)
@@ -158,9 +142,7 @@ func SystemParametersInfo(uiAction, uiParam uint32, pvParam unsafe.Pointer, fWin
 	return ret != 0
 }
 
-// SetWallpaper 桌面壁纸设置函数
 func SetWallpaper(filepath string) error {
-	// 将文件路径转换为指向宽字符的指针
 	filepathPtr, err := syscall.UTF16PtrFromString(filepath)
 	if err != nil {
 		return errors.New("文件路径转换为指向宽字符的指针失败")

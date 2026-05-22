@@ -6,7 +6,6 @@
 .idea/*
 .vs/
 *.json
-test/icon.ico
 Makefile
 go.work
 go.work.sum

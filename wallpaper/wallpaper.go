@@ -1,4 +1,4 @@
-package Gwallpaper
+package wallpaper
 
 import (
 	_ "embed"
@@ -12,7 +12,7 @@ import (
 var (
 	C Config
 
-	//go:embed asset/icon.ico
+	//go:embed icon.ico
 	Icon []byte
 )
 
@@ -33,7 +33,6 @@ func init() {
 	InitSetting()
 }
 
-// ChangeWallPaper 改变壁纸
 func (c *Config) ChangeWallPaper() {
 	path := C.GetPicPathByTree()
 	if !IsImage(path) {
@@ -53,7 +52,6 @@ func (c *Config) ChangeWallPaper() {
 	}
 }
 
-// InitSetting 加载配置
 func InitSetting() {
 	_, err := os.Stat("setting.json")
 	if err != nil {
@@ -61,14 +59,12 @@ func InitSetting() {
 		return
 	}
 	LoadData()
-	//	校验配置
 	if !CheckFolderHasImage(C.Cache.Name) {
 		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
 		Config2Json(C.SleepTime, C.ChangeLockWallPaper)
 	}
 }
 
-// 锁屏壁纸设置
 func setLockWallpaper(filepath string) error {
 	k, _, err := registry.CreateKey(registry.LOCAL_MACHINE, LockWallPaperRegPath, registry.ALL_ACCESS)
 	if err != nil {
@@ -76,7 +72,6 @@ func setLockWallpaper(filepath string) error {
 	}
 	defer k.Close()
 
-	// Set the value of LockScreenImagePath to the desired path
 	err = k.SetStringValue("LockScreenImagePath", filepath)
 	if err != nil {
 		return errors.New("请使用管理员权限运行")
@@ -84,7 +79,6 @@ func setLockWallpaper(filepath string) error {
 	return nil
 }
 
-// UndoSetLockWallpaper 撤销锁屏壁纸设置
 func UndoSetLockWallpaper() error {
 	k, err := registry.OpenKey(registry.LOCAL_MACHINE, LockWallPaperRegPath, registry.ALL_ACCESS)
 	if err != nil {
@@ -92,7 +86,6 @@ func UndoSetLockWallpaper() error {
 	}
 	defer k.Close()
 
-	// Delete the value of LockScreenImagePath
 	err = k.DeleteValue("LockScreenImagePath")
 	if err != nil {
 		return errors.New("恢复锁屏失败,请使用管理员权限运行")
@@ -100,13 +93,11 @@ func UndoSetLockWallpaper() error {
 	return nil
 }
 
-// EditConfig 编辑配置
 func EditConfig() {
 	cmd := exec.Command("notepad", "./setting.json")
 	cmd.Run()
 }
 
-// Config2Json 生成配置 也可用于还原原本配置
 func Config2Json(SleepTime int64, ChangeLockWallPaper bool) {
 	IsChoice, PicFolderPath := ShowFolderDialogForGetFolderPath("选择壁纸文件夹")
 	if !IsChoice {

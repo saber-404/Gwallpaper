@@ -1,4 +1,4 @@
-package Gwallpaper
+package wallpaper
 
 import (
 	"errors"
@@ -11,9 +11,7 @@ type PicNode struct {
 	Children []*PicNode
 }
 
-// Insert 生成图片树
 func (p *PicNode) Insert(path string) {
-	// 递归出口
 	dirs, err := os.ReadDir(path)
 	if err != nil {
 		return
@@ -29,7 +27,6 @@ func (p *PicNode) Insert(path string) {
 	}
 }
 
-// filterPicEntries 去掉dirs中的空文件夹
 func filterPicEntries(path string, dirs []os.DirEntry) []os.DirEntry {
 	var result []os.DirEntry
 	for _, dir := range dirs {
@@ -52,7 +49,6 @@ func SetTreeNode() {
 	C.Cache.Insert(C.Cache.Name)
 }
 
-// GetPicPathByTree	随机返回一张图片的绝对路径
 func (c *Config) GetPicPathByTree() string {
 	if len(C.Cache.Children) == 0 {
 		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
