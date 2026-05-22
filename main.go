@@ -2,8 +2,9 @@ package main
 
 import (
 	"Gwallpaper/wallpaper"
-	"github.com/getlantern/systray"
 	"time"
+
+	"github.com/getlantern/systray"
 )
 
 func main() {

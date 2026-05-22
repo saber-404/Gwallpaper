@@ -45,17 +45,17 @@ func filterPicEntries(path string, dirs []os.DirEntry) []os.DirEntry {
 }
 
 func SetTreeNode() {
-	C.Cache.Children = nil
-	C.Cache.Insert(C.Cache.Name)
+	picTree.Children = nil
+	picTree.Insert(C.FolderPath)
 }
 
-func (c *Config) GetPicPathByTree() string {
-	if len(C.Cache.Children) == 0 {
+func GetPicPathByTree() string {
+	if len(picTree.Children) == 0 {
 		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
 		Config2Json(C.SleepTime, C.ChangeLockWallPaper)
 	}
 	var path string
-	node := C.Cache
+	node := picTree
 	for {
 		l := len(node.Children)
 		if l == 0 {
@@ -65,5 +65,5 @@ func (c *Config) GetPicPathByTree() string {
 		path = filepath.Join(path, child.Name)
 		node = *child
 	}
-	return filepath.Join(C.Cache.Name, path)
+	return filepath.Join(C.FolderPath, path)
 }

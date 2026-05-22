@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	C Config
+	C       Config
+	picTree PicNode
 
 	//go:embed icon.ico
 	Icon []byte
@@ -26,7 +27,7 @@ const (
 type Config struct {
 	SleepTime          int64
 	ChangeLockWallPaper bool
-	Cache              PicNode
+	FolderPath         string
 }
 
 func init() {
@@ -34,7 +35,7 @@ func init() {
 }
 
 func (c *Config) ChangeWallPaper() {
-	path := C.GetPicPathByTree()
+	path := GetPicPathByTree()
 	if !IsImage(path) {
 		SetTreeNode()
 	}
@@ -59,7 +60,7 @@ func InitSetting() {
 		return
 	}
 	LoadData()
-	if !CheckFolderHasImage(C.Cache.Name) {
+	if !CheckFolderHasImage(C.FolderPath) {
 		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
 		Config2Json(C.SleepTime, C.ChangeLockWallPaper)
 	}
@@ -98,7 +99,7 @@ func EditConfig() {
 	cmd.Run()
 }
 
-func Config2Json(SleepTime int64, ChangeLockWallPaper bool) {
+func Config2Json(sleepTime int64, changeLock bool) {
 	IsChoice, PicFolderPath := ShowFolderDialogForGetFolderPath("选择壁纸文件夹")
 	if !IsChoice {
 		os.Exit(0)
@@ -110,21 +111,21 @@ func Config2Json(SleepTime int64, ChangeLockWallPaper bool) {
 	if !IsChoice {
 		os.Exit(0)
 	}
-	C.Cache.Name = PicFolderPath
+	C.FolderPath = PicFolderPath
 	SetTreeNode()
-	DefaultConfig := Config{
-		SleepTime:          SleepTime,
-		ChangeLockWallPaper: ChangeLockWallPaper,
-		Cache:              C.Cache,
+	cfg := Config{
+		SleepTime:          sleepTime,
+		ChangeLockWallPaper: changeLock,
+		FolderPath:         PicFolderPath,
 	}
-	err := SaveData(DefaultConfig)
+	err := SaveData(cfg)
 	if err != nil {
 		return
 	}
 }
 
-func SaveData(DefaultConfig Config) error {
-	bytes, err := json.MarshalIndent(DefaultConfig, "", "    ")
+func SaveData(cfg Config) error {
+	bytes, err := json.MarshalIndent(cfg, "", "    ")
 	if err != nil {
 		return err
 	}

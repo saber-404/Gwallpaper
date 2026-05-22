@@ -73,7 +73,7 @@ func MessageBox(hWnd HWND, lpText, lpCaption *uint16, uType uint32) int32 {
 	return int32(ret)
 }
 
-func ShowMessage(err error, flags uintptr) {
+func ShowMessage(err error, flags uint32) {
 	hwnd := GetActiveWindow()
 	var caption = Title
 	var message = err.Error()
@@ -85,7 +85,7 @@ func ShowMessage(err error, flags uintptr) {
 	if err != nil {
 		return
 	}
-	MessageBox(hwnd, messageptr, captionptr, uint32(flags))
+	MessageBox(hwnd, messageptr, captionptr, flags)
 }
 
 func SHBrowseForFolder(lpbi *BROWSEINFO) uintptr {

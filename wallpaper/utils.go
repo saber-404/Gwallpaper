@@ -1,7 +1,6 @@
 package wallpaper
 
 import (
-	"fmt"
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
@@ -12,21 +11,21 @@ import (
 )
 
 func CheckFolderHasImage(folderpath string) bool {
-	hasImage := false
-	err := filepath.Walk(folderpath, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if IsImage(path) {
-			hasImage = true
-			return filepath.SkipDir
-		}
-		return nil
-	})
+	entries, err := os.ReadDir(folderpath)
 	if err != nil {
-		fmt.Println(err)
+		return false
 	}
-	return hasImage
+	for _, entry := range entries {
+		path := filepath.Join(folderpath, entry.Name())
+		if entry.IsDir() {
+			if CheckFolderHasImage(path) {
+				return true
+			}
+		} else if IsImage(path) {
+			return true
+		}
+	}
+	return false
 }
 
 func IsImage(path string) bool {
