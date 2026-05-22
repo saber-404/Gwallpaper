@@ -20,12 +20,12 @@ const (
 	Title                      = "GwallPaper"
 	LockWallPaperRegPath       = `SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP`
 	SleepTime            int64 = 900
-	ChangeLockWallPaper        = false
+	DefaultChangeLockWallPaper = false
 )
 
 type Config struct {
 	SleepTime          int64
-	ChangLockWallPaper bool
+	ChangeLockWallPaper bool
 	Cache              PicNode
 }
 
@@ -44,7 +44,7 @@ func (c *Config) ChangeWallPaper() {
 		ShowMessage(err, MB_OK)
 		return
 	}
-	if c.ChangLockWallPaper {
+	if c.ChangeLockWallPaper {
 		err := setLockWallpaper(path)
 		if err != nil {
 			ShowMessage(err, MB_OK)
@@ -57,14 +57,14 @@ func (c *Config) ChangeWallPaper() {
 func InitSetting() {
 	_, err := os.Stat("setting.json")
 	if err != nil {
-		Config2Json(SleepTime, ChangeLockWallPaper)
+		Config2Json(SleepTime, DefaultChangeLockWallPaper)
 		return
 	}
 	LoadData()
 	//	校验配置
 	if !CheckFolderHasImage(C.Cache.Name) {
 		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
-		Config2Json(C.SleepTime, C.ChangLockWallPaper)
+		Config2Json(C.SleepTime, C.ChangeLockWallPaper)
 	}
 }
 
@@ -123,7 +123,7 @@ func Config2Json(SleepTime int64, ChangeLockWallPaper bool) {
 	SetTreeNode()
 	DefaultConfig := Config{
 		SleepTime:          SleepTime,
-		ChangLockWallPaper: ChangeLockWallPaper,
+		ChangeLockWallPaper: ChangeLockWallPaper,
 		Cache:              C.Cache,
 	}
 	err := SaveData(DefaultConfig)

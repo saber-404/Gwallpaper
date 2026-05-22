@@ -56,7 +56,7 @@ func SetTreeNode() {
 func (c *Config) GetPicPathByTree() string {
 	if len(C.Cache.Children) == 0 {
 		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
-		Config2Json(C.SleepTime, C.ChangLockWallPaper)
+		Config2Json(C.SleepTime, C.ChangeLockWallPaper)
 	}
 	var path string
 	node := C.Cache

@@ -1,6 +1,12 @@
 *.exe
+*.exe~
+*.out
+*.test
+*.test.exe
 .idea/*
+.vs/
 *.json
 test/icon.ico
-Csrc/*
 Makefile
+go.work
+go.work.sum

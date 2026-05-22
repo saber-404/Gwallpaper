@@ -31,7 +31,7 @@ func TestUndoSetLockWallpaper(t *testing.T) {
 }
 
 func TestConfig2Json(t *testing.T) {
-	Gwallpaper.Config2Json(Gwallpaper.SleepTime, Gwallpaper.ChangeLockWallPaper)
+	Gwallpaper.Config2Json(Gwallpaper.SleepTime, Gwallpaper.DefaultChangeLockWallPaper)
 }
 
 func TestChangeWallPaper(t *testing.T) {
