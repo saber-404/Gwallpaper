@@ -8,8 +8,9 @@ import (
 )
 
 type App struct {
-	Config  Config
-	picTree PicNode
+	Config       Config
+	picTree      PicNode
+	lastLockPath string
 }
 
 func New() *App {
@@ -28,13 +29,21 @@ func (a *App) ChangeWallPaper() {
 		ShowMessage(err, MB_OK)
 		return
 	}
-	if a.Config.ChangeLockWallPaper {
+	if a.Config.ChangeLockWallPaper && path != a.lastLockPath {
 		err := setLockWallpaper(path)
 		if err != nil {
 			ShowMessage(err, MB_OK)
 			return
 		}
+		a.lastLockPath = path
 	}
+}
+
+func (a *App) ResetDefaults() {
+	a.Config.SleepTime = SleepTime
+	a.Config.ChangeLockWallPaper = DefaultChangeLockWallPaper
+	a.lastLockPath = ""
+	a.SaveData()
 }
 
 func (a *App) InitSetting() {
@@ -44,6 +53,7 @@ func (a *App) InitSetting() {
 		return
 	}
 	a.LoadData()
+	a.SetTreeNode()
 	if !CheckFolderHasImage(a.Config.FolderPath) {
 		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
 		a.Config2Json(a.Config.SleepTime, a.Config.ChangeLockWallPaper)

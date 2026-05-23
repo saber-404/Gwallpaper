@@ -35,14 +35,26 @@ func onReady() {
 				app.ChangeWallPaper()
 			case <-reloadItem.ClickedCh:
 				app.LoadData()
+				if app.Config.ChangeLockWallPaper {
+					LockItem.Check()
+				} else {
+					LockItem.Uncheck()
+					err := wallpaper.UndoSetLockWallpaper()
+					if err != nil {
+						wallpaper.ShowMessage(err, wallpaper.MB_OK)
+					}
+				}
 				app.SetTreeNode()
 				app.ChangeWallPaper()
 				app.SaveData()
 			case <-changeItem.ClickedCh:
 				app.ChangeWallPaper()
 			case <-defaultItem.ClickedCh:
-				app.Config2Json(wallpaper.SleepTime, wallpaper.DefaultChangeLockWallPaper)
-				app.InitSetting()
+				app.ResetDefaults()
+				LockItem.Uncheck()
+				if err := wallpaper.UndoSetLockWallpaper(); err != nil {
+					wallpaper.ShowMessage(err, wallpaper.MB_OK)
+				}
 				app.ChangeWallPaper()
 			case <-LockItem.ClickedCh:
 				app.Config.ChangeLockWallPaper = !app.Config.ChangeLockWallPaper
@@ -56,6 +68,7 @@ func onReady() {
 						wallpaper.ShowMessage(err, wallpaper.MB_OK)
 					}
 				}
+				app.SaveData()
 			case <-editItem.ClickedCh:
 				wallpaper.EditConfig()
 			}
