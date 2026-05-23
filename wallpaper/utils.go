@@ -7,7 +7,6 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 func CheckFolderHasImage(folderpath string) bool {
@@ -39,10 +38,6 @@ func IsImage(path string) bool {
 		return false
 	}
 	return true
-}
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
 }
 
 func RandIntn(length int) int {

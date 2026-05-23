@@ -1,7 +1,6 @@
 package wallpaper
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 )
@@ -42,28 +41,4 @@ func filterPicEntries(path string, dirs []os.DirEntry) []os.DirEntry {
 		result = append(result, dir)
 	}
 	return result
-}
-
-func SetTreeNode() {
-	picTree.Children = nil
-	picTree.Insert(C.FolderPath)
-}
-
-func GetPicPathByTree() string {
-	if len(picTree.Children) == 0 {
-		ShowMessage(errors.New("壁纸文件夹内无图片"), MB_OK)
-		Config2Json(C.SleepTime, C.ChangeLockWallPaper)
-	}
-	var path string
-	node := picTree
-	for {
-		l := len(node.Children)
-		if l == 0 {
-			break
-		}
-		child := node.Children[RandIntn(l)]
-		path = filepath.Join(path, child.Name)
-		node = *child
-	}
-	return filepath.Join(C.FolderPath, path)
 }

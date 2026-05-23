@@ -7,7 +7,10 @@ import (
 	"github.com/getlantern/systray"
 )
 
+var app *wallpaper.App
+
 func main() {
+	app = wallpaper.New()
 	systray.Run(onReady, onExit)
 }
 
@@ -19,7 +22,7 @@ func onReady() {
 	defaultItem := systray.AddMenuItem("恢复默认", "reset settings")
 	editItem := systray.AddMenuItem("编辑配置", "Edit Config File")
 	changeItem := systray.AddMenuItem("换一张", "Choose other")
-	LockItem := systray.AddMenuItemCheckbox("改变锁屏", "test1", wallpaper.C.ChangeLockWallPaper)
+	LockItem := systray.AddMenuItemCheckbox("改变锁屏", "test1", app.Config.ChangeLockWallPaper)
 	systray.AddSeparator()
 	exitItem := systray.AddMenuItem("退出程序", "Exit app")
 	go func() {
@@ -28,24 +31,24 @@ func onReady() {
 			case <-exitItem.ClickedCh:
 				systray.Quit()
 				return
-			case <-time.After(time.Duration(wallpaper.C.SleepTime) * time.Second):
-				wallpaper.C.ChangeWallPaper()
+			case <-time.After(time.Duration(app.Config.SleepTime) * time.Second):
+				app.ChangeWallPaper()
 			case <-reloadItem.ClickedCh:
-				wallpaper.LoadData()
-				wallpaper.SetTreeNode()
-				wallpaper.C.ChangeWallPaper()
-				wallpaper.SaveData(wallpaper.C)
+				app.LoadData()
+				app.SetTreeNode()
+				app.ChangeWallPaper()
+				app.SaveData()
 			case <-changeItem.ClickedCh:
-				wallpaper.C.ChangeWallPaper()
+				app.ChangeWallPaper()
 			case <-defaultItem.ClickedCh:
-				wallpaper.Config2Json(wallpaper.SleepTime, wallpaper.DefaultChangeLockWallPaper)
-				wallpaper.InitSetting()
-				wallpaper.C.ChangeWallPaper()
+				app.Config2Json(wallpaper.SleepTime, wallpaper.DefaultChangeLockWallPaper)
+				app.InitSetting()
+				app.ChangeWallPaper()
 			case <-LockItem.ClickedCh:
-				wallpaper.C.ChangeLockWallPaper = !wallpaper.C.ChangeLockWallPaper
-				if wallpaper.C.ChangeLockWallPaper {
+				app.Config.ChangeLockWallPaper = !app.Config.ChangeLockWallPaper
+				if app.Config.ChangeLockWallPaper {
 					LockItem.Check()
-					wallpaper.C.ChangeWallPaper()
+					app.ChangeWallPaper()
 				} else {
 					LockItem.Uncheck()
 					err := wallpaper.UndoSetLockWallpaper()
@@ -61,5 +64,5 @@ func onReady() {
 }
 
 func onExit() {
-	wallpaper.SaveData(wallpaper.C)
+	app.SaveData()
 }
