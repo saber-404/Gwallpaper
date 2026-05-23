@@ -55,21 +55,16 @@ var (
 )
 
 func GetActiveWindow() HWND {
-	ret, _, _ := syscall.Syscall(getActiveWindow.Addr(), 0,
-		0,
-		0,
-		0)
+	ret, _, _ := syscall.SyscallN(getActiveWindow.Addr())
 	return HWND(ret)
 }
 
 func MessageBox(hWnd HWND, lpText, lpCaption *uint16, uType uint32) int32 {
-	ret, _, _ := syscall.Syscall6(messageBox.Addr(), 4,
+	ret, _, _ := syscall.SyscallN(messageBox.Addr(),
 		uintptr(hWnd),
 		uintptr(unsafe.Pointer(lpText)),
 		uintptr(unsafe.Pointer(lpCaption)),
-		uintptr(uType),
-		0,
-		0)
+		uintptr(uType))
 	return int32(ret)
 }
 
@@ -89,41 +84,40 @@ func ShowMessage(err error, flags uint32) {
 }
 
 func SHBrowseForFolder(lpbi *BROWSEINFO) uintptr {
-	ret, _, _ := syscall.Syscall(shBrowseForFolder.Addr(), 1,
-		uintptr(unsafe.Pointer(lpbi)),
-		0,
-		0)
+	ret, _, _ := syscall.SyscallN(shBrowseForFolder.Addr(),
+		uintptr(unsafe.Pointer(lpbi)))
 	return ret
 }
 
 func SHGetPathFromIDList(pidl uintptr, pszPath *uint16) bool {
-	ret, _, _ := syscall.Syscall(shGetPathFromIDList.Addr(), 2,
+	ret, _, _ := syscall.SyscallN(shGetPathFromIDList.Addr(),
 		pidl,
-		uintptr(unsafe.Pointer(pszPath)),
-		0)
+		uintptr(unsafe.Pointer(pszPath)))
 	return ret != 0
 }
 
-func SHParseDisplayName(pszName *uint16, pbc uintptr, ppidl *uintptr, sfgaoIn uint32, psfgaoOut *uint32) HRESULT {
-	ret, _, _ := syscall.Syscall6(shParseDisplayName.Addr(), 5,
+func SHParseDisplayName(pszName *uint16, pbc uintptr, ppidl *uintptr, psfgaoOut *uint32) HRESULT {
+	ret, _, _ := syscall.SyscallN(shParseDisplayName.Addr(),
 		uintptr(unsafe.Pointer(pszName)),
 		pbc,
 		uintptr(unsafe.Pointer(ppidl)),
-		0,
-		uintptr(unsafe.Pointer(psfgaoOut)),
-		0)
+		uintptr(unsafe.Pointer(psfgaoOut)))
 	return HRESULT(ret)
 }
 
 func ShowFolderDialogForGetFolderPath(message string) (IsChoice bool, PicFolderPath string) {
 	var path [256]uint16
-	pszName := syscall.StringToUTF16Ptr(`::{20D04FE0-3AEA-1069-A2D8-08002B30309D}`)
+	pszName, err := syscall.UTF16PtrFromString(`::{20D04FE0-3AEA-1069-A2D8-08002B30309D}`)
+	if err != nil {
+		return false, ""
+	}
 	ppidl := uintptr(unsafe.Pointer(&ITEMIDLIST{}))
-	SHParseDisplayName(pszName, 0, &ppidl, 0, nil)
+	SHParseDisplayName(pszName, 0, &ppidl, nil)
+	titlePtr, _ := syscall.UTF16PtrFromString(message)
 	bi := &BROWSEINFO{
 		HwndOwner: HWND(0),
 		PidlRoot:  ppidl,
-		LpszTitle: syscall.StringToUTF16Ptr(message),
+		LpszTitle: titlePtr,
 		UlFlags:   BIF_RETURNONLYFSDIRS | BIF_DONTGOBELOWDOMAIN | BIF_NEWDIALOGSTYLE | BIF_NONEWFOLDERBUTTON,
 	}
 	pidl := SHBrowseForFolder(bi)
@@ -132,13 +126,11 @@ func ShowFolderDialogForGetFolderPath(message string) (IsChoice bool, PicFolderP
 }
 
 func SystemParametersInfo(uiAction, uiParam uint32, pvParam unsafe.Pointer, fWinIni uint32) bool {
-	ret, _, _ := syscall.Syscall6(systemParametersInfo.Addr(), 4,
+	ret, _, _ := syscall.SyscallN(systemParametersInfo.Addr(),
 		uintptr(uiAction),
 		uintptr(uiParam),
 		uintptr(pvParam),
-		uintptr(fWinIni),
-		0,
-		0)
+		uintptr(fWinIni))
 	return ret != 0
 }
 

@@ -4,9 +4,7 @@ import (
 	_ "embed"
 	"errors"
 	"golang.org/x/sys/windows/registry"
-	"math/rand"
 	"os/exec"
-	"time"
 )
 
 var (
@@ -25,10 +23,6 @@ type Config struct {
 	SleepTime          int64
 	ChangeLockWallPaper bool
 	FolderPath         string
-}
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
 }
 
 func setLockWallpaper(filepath string) error {
